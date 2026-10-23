@@ -34,17 +34,18 @@
     </style>
 </head>
 <body>
-    <div class="editor-container">
+     <div class="editor-container">
         <textarea id="editor" placeholder="Начните писать..."></textarea>
     </div>
+
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     <script>
-         
         const firebaseConfig = {
-            databaseURL:  "https://rtn001-47f71-default-rtdb.firebaseio.com"
+            databaseURL: "https://firebaseio.com"
         };
-        
-        // Инициализация
-        firebase.initializeApp(firebaseConfig);
+
+
         const dbRef = firebase.database().ref('sharedText');
         const editor = document.getElementById('editor');
 
