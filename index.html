@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блокнот</title>
+    <style>
+        :root {
+            --color-dark: #000000; 
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            /* Бесшовная текстура пергамента на весь экран */
+            background: radial-gradient(circle, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 100%), 
+                        url('https://transparenttextures.com'), 
+                        #E2C597 ;
+            background-attachment: fixed;
+            color: var(--color-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 2px; 
+        }
+
+        /* Контейнер без рамок с текстурой */
+        .editor-container {
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)), 
+                        url('https://unsplash.com') no-repeat center center;
+            background-size: cover;
+            border: none; 
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.15); /* Мягкая внутренняя тень */
+            overflow: hidden;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            flex-grow: 1;
+            padding: 15px; 
+            border: none;
+            outline: none;
+            resize: none;
+            font-size: 2.4rem;
+            line-height: 0.8;
+            color: var(--color-dark);
+            background-color: transparent;
+            font-family: inherit;
+        }
+
+        /* Полноэкранный режим */
+        :fullscreen body {
+            padding: 2px;
+        }
+        :-webkit-full-screen body {
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="editor-container">
+        <textarea id="editor" placeholder="Начните писать..."></textarea>
+    </div>
+
+    <script>
+        const editor = document.getElementById('editor');
+
+        // 1. ЗАГРУЗКА ТЕКСТА: Восстановление записи при старте страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedText = localStorage.getItem('vintage_notepad_text');
+            if (savedText) {
+                editor.value = savedText;
+            }
+        });
+
+        // 2. АВТОСОХРАНЕНИЕ: Запись сохраняется при каждом измененном символе
+        editor.addEventListener('input', () => {
+            localStorage.setItem('vintage_notepad_text', editor.value);
+        });
+
+        // 3. ДВОЙНОЙ ТАП: Отслеживание быстрых кликов/тапов для полноэкранного режима
+        let lastTap = 0;
+        document.addEventListener('click', function (event) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            
+            // Если между нажатиями прошло меньше 300 миллисекунд — это двойной тап
+            if (tapLength < 300 && tapLength > 0) {
+                toggleFullScreen();
+                event.preventDefault(); // Предотвращает нежелательный зум страницы на смартфонах
+            }
+            lastTap = currentTime;
+        });
+
+        // 4. ФУНКЦИЯ ПОЛНОЭКРАННОГО РЕЖИМА (с поддержкой разных браузеров)
+        function toggleFullScreen() {
+            if (!document.fullscreenElement && 
+                !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  
+                
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
