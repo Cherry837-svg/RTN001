@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Блокнот</title>
     
-    <!-- ИСПРАВЛЕНО: Подключаем реальные рабочие библиотеки Firebase v8 -->
-     <script src="https://gstatic.com"></script>
-<script src="https://gstatic.com"></script>
+    <!-- Подключаем реальные рабочие библиотеки Firebase v8 -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
 
     <style>
         :root { --color-dark: #634724; }
@@ -38,13 +38,13 @@
         <textarea id="editor" placeholder="Начните писать..."></textarea>
     </div>
 
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
     <script>
+        // Инициализация Firebase
         const firebaseConfig = {
-            databaseURL: "https://firebaseio.com"
+            databaseURL: "https://rtn001-47f71-default-rtdb.firebaseio.com"
         };
-
+        
+        firebase.initializeApp(firebaseConfig);
 
         const dbRef = firebase.database().ref('sharedText');
         const editor = document.getElementById('editor');
