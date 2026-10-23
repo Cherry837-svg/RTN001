@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Блокнот</title>
-       <script src="https://gstatic.com"></script>
+    
+    <!-- ИСПРАВЛЕНО: Подключаем реальные рабочие библиотеки Firebase v8 -->
+    <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 
     <style>
@@ -36,23 +38,32 @@
         <textarea id="editor" placeholder="Начните писать..."></textarea>
     </div>
     <script>
+         
         const firebaseConfig = {
-            databaseURL: "https://firebaseio.com",
-            locationId: "us-central1"
+            databaseURL:  "https://rtn001-47f71-default-rtdb.firebaseio.com"
         };
         
+        // Инициализация
         firebase.initializeApp(firebaseConfig);
         const dbRef = firebase.database().ref('sharedText');
         const editor = document.getElementById('editor');
 
+        // Получение данных из базы в реальном времени
         dbRef.on('value', (snapshot) => {
-            if (snapshot.exists()) { editor.value = snapshot.val(); }
+            if (snapshot.exists()) { 
+                // Предотвращаем прыжки курсора при обновлении текста
+                if (editor.value !== snapshot.val()) {
+                    editor.value = snapshot.val(); 
+                }
+            }
         });
 
+        // Отправка данных в базу при вводе текста
         editor.addEventListener('input', (e) => {
             dbRef.set(e.target.value);
         });
 
+        // Полноэкранный режим по двойному клику
         let lastTap = 0;
         document.addEventListener('click', function (event) {
             const currentTime = new Date().getTime();
@@ -74,6 +85,3 @@
 </body>
 </html>
 
-
-Написать:
-Новое сообще
