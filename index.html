@@ -1,134 +1,76 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Блокнот</title>
+    <title>Р‘Р»РѕРєРЅРѕС‚</title>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     <style>
-        :root {
-            --color-dark: #000000; 
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        :root { --color-dark: #634724; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Georgia', 'Times New Roman', serif;
-            /* Бесшовная текстура пергамента на весь экран */
             background: radial-gradient(circle, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 100%), 
-                        url('https://transparenttextures.com'), 
-                        #E2C597 ;
-            background-attachment: fixed;
-            color: var(--color-dark);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding: 2px; 
+                        url('https://transparenttextures.com'), #9B794A;
+            background-attachment: fixed; color: var(--color-dark);
+            display: flex; flex-direction: column; min-height: 100vh; padding: 2px; 
         }
-
-        /* Контейнер без рамок с текстурой */
         .editor-container {
-            width: 100%;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)), 
-                        url('https://unsplash.com') no-repeat center center;
-            background-size: cover;
-            border: none; 
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.15); /* Мягкая внутренняя тень */
-            overflow: hidden;
+            width: 100%; flex-grow: 1; display: flex; flex-direction: column;
+            background: linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25));
+            border: none; box-shadow: inset 0 0 30px rgba(0,0,0,0.15); overflow: hidden;
         }
-
         textarea {
-            width: 100%;
-            height: 100%;
-            flex-grow: 1;
-            padding: 15px; 
-            border: none;
-            outline: none;
-            resize: none;
-            font-size: 2.4rem;
-            line-height: 0.8;
-            color: var(--color-dark);
-            background-color: transparent;
-            font-family: inherit;
+            width: 100%; height: 100%; flex-grow: 1; padding: 15px; border: none; outline: none;
+            resize: none; font-size: 1.8rem; line-height: 1.2; color: var(--color-dark);
+            background-color: transparent; font-family: inherit;
         }
-
-        /* Полноэкранный режим */
-        :fullscreen body {
-            padding: 2px;
-        }
-        :-webkit-full-screen body {
-            padding: 2px;
-        }
+        :fullscreen body { padding: 2px; }
+        :-webkit-full-screen body { padding: 2px; }
     </style>
 </head>
 <body>
-
     <div class="editor-container">
-        <textarea id="editor" placeholder="Начните писать..."></textarea>
+        <textarea id="editor" placeholder="РќР°С‡РЅРёС‚Рµ РїРёСЃР°С‚СЊ..."></textarea>
     </div>
-
     <script>
+        // Р’РЎРўРђР’Р¬РўР• Р’РђРЁРЈ РЎРЎР«Р›РљРЈ РњР•Р–Р”РЈ РљРђР’Р«Р§РљРђРњР РќРР–Р•!
+        https:"//rtn001-47f71-default-rtdb.firebaseio.com/"
+        const firebaseConfig = {
+            databaseURL: "РЎР®Р”Рђ_Р’РЎРўРђР’РРўР¬_РЎРЎР«Р›РљРЈ"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref('sharedText');
         const editor = document.getElementById('editor');
 
-        // 1. ЗАГРУЗКА ТЕКСТА: Восстановление записи при старте страницы
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedText = localStorage.getItem('vintage_notepad_text');
-            if (savedText) {
-                editor.value = savedText;
-            }
+        dbRef.on('value', (snapshot) => {
+            if (snapshot.exists()) { editor.value = snapshot.val(); }
         });
 
-        // 2. АВТОСОХРАНЕНИЕ: Запись сохраняется при каждом измененном символе
-        editor.addEventListener('input', () => {
-            localStorage.setItem('vintage_notepad_text', editor.value);
+        editor.addEventListener('input', (e) => {
+            dbRef.set(e.target.value);
         });
 
-        // 3. ДВОЙНОЙ ТАП: Отслеживание быстрых кликов/тапов для полноэкранного режима
         let lastTap = 0;
         document.addEventListener('click', function (event) {
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTap;
-            
-            // Если между нажатиями прошло меньше 300 миллисекунд — это двойной тап
-            if (tapLength < 300 && tapLength > 0) {
-                toggleFullScreen();
-                event.preventDefault(); // Предотвращает нежелательный зум страницы на смартфонах
-            }
+            if (tapLength < 300 && tapLength > 0) { toggleFullScreen(); event.preventDefault(); }
             lastTap = currentTime;
         });
 
-        // 4. ФУНКЦИЯ ПОЛНОЭКРАННОГО РЕЖИМА (с поддержкой разных браузеров)
         function toggleFullScreen() {
-            if (!document.fullscreenElement && 
-                !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  
-                
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                } else if (document.documentElement.msRequestFullscreen) {
-                    document.documentElement.msRequestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) {
-                    document.documentElement.mozRequestFullScreen();
-                } else if (document.documentElement.webkitRequestFullscreen) {
-                    document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-                }
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {  
+                if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
+                else if (document.documentElement.webkitRequestFullscreen) { document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT); }
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
+                if (document.exitFullscreen) { document.exitFullscreen(); }
+                else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
             }
         }
     </script>
 </body>
 </html>
+
