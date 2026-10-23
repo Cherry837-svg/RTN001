@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Блокнот</title>
     
-    <!-- Подключаем реальные рабочие библиотеки Firebase v8 -->
+    <!-- Подключаем правильные библиотеки Firebase v8 -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 
@@ -14,8 +14,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Georgia', 'Times New Roman', serif;
-            background: radial-gradient(circle, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 100%), 
-                        url('https://transparenttextures.com'), #9B794A;
+            background: radial-gradient(circle, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 100%), #9B794A;
             background-attachment: fixed; color: var(--color-dark);
             display: flex; flex-direction: column; min-height: 100vh; padding: 2px; 
         }
@@ -39,11 +38,12 @@
     </div>
 
     <script>
-        // Инициализация Firebase
+        // Конфигурация вашей базы данных
         const firebaseConfig = {
-            databaseURL: "https://rtn001-47f71-default-rtdb.firebaseio.com"
+            databaseURL: "https://firebaseio.com"
         };
         
+        // Инициализация
         firebase.initializeApp(firebaseConfig);
 
         const dbRef = firebase.database().ref('sharedText');
@@ -52,7 +52,6 @@
         // Получение данных из базы в реальном времени
         dbRef.on('value', (snapshot) => {
             if (snapshot.exists()) { 
-                // Предотвращаем прыжки курсора при обновлении текста
                 if (editor.value !== snapshot.val()) {
                     editor.value = snapshot.val(); 
                 }
